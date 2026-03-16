@@ -1,5 +1,5 @@
-# Use an official Python 3.9 slim image as the base
-FROM python:3.9-slim
+# Use an official TensorFlow CPU image with Python 3.9 as the base
+FROM tensorflow/tensorflow:2.10.0-cpu-python3.9
 
 # Set the working directory inside the container
 WORKDIR /app
