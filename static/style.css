@@ -1,0 +1,252 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0e1117;
+  color: #e0e0e0;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 100vh;
+  padding: 36px 20px;
+}
+
+.wrap {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.25;
+}
+
+.sub {
+  color: #9a9a9a;
+  margin-bottom: 28px;
+  font-size: 0.96rem;
+}
+
+.sub strong {
+  color: #ccc;
+}
+
+.lbl {
+  color: #aaa;
+  font-size: 0.87rem;
+  margin-bottom: 8px;
+}
+
+/* Drop zone */
+.drop {
+  background: #1c1f27;
+  border: 1px solid #3a3f50;
+  border-radius: 10px;
+  padding: 22px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.drop:hover,
+.drop.over {
+  border-color: #7c83ff;
+}
+
+.drop input[type="file"] {
+  display: none;
+}
+
+.drop-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.drop-txt {
+  font-size: 0.92rem;
+  color: #ccc;
+}
+
+.drop-txt small {
+  display: block;
+  color: #777;
+  font-size: 0.77rem;
+  margin-top: 3px;
+}
+
+.browse {
+  background: #2b2f3d;
+  border: 1px solid #4a5060;
+  color: #ccc;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.87rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.browse:hover {
+  background: #3a3f50;
+}
+
+/* Buttons */
+.pred-btn,
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #2b2f3d;
+  border: 1px solid #4a5060;
+  color: #d0d0d0;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 0.93rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.pred-btn {
+  margin-top: 16px;
+}
+
+.back-btn {
+  margin-bottom: 26px;
+}
+
+.pred-btn:hover,
+.back-btn:hover {
+  background: #3a3f50;
+}
+
+/* Image preview */
+.prev-box {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.prev-box img {
+  max-height: 300px;
+  max-width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.prev-box figcaption {
+  color: #777;
+  font-size: 0.82rem;
+  margin-top: 8px;
+}
+
+/* Info cards */
+.card {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+.c-stage {
+  background: #1a3d2b;
+  border-left: 3px solid #2e8050;
+}
+
+.c-action {
+  background: #172435;
+  border-left: 3px solid #2a5d8a;
+}
+
+.c-diet {
+  background: #262b14;
+  border-left: 3px solid #697a20;
+}
+
+.card strong {
+  color: #fff;
+}
+
+/* Gauge */
+.gauge-wrap {
+  text-align: center;
+  margin: 28px 0 10px;
+}
+
+canvas {
+  max-width: 100%;
+}
+
+/* Stage confidence cards */
+.s-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.s-card {
+  border-radius: 8px;
+  padding: 18px 10px;
+  text-align: center;
+}
+
+.s-card .sn {
+  font-size: 0.77rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 10px;
+  line-height: 1.35;
+}
+
+.s-card .sv {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.s-card.active {
+  outline: 2px solid #fff;
+}
+
+.n-card {
+  background: #1c5c33;
+}
+
+.p1-card {
+  background: #7a5c00;
+}
+
+.p2-card {
+  background: #7a4010;
+}
+
+.ca-card {
+  background: #6e1818;
+}
+
+.err {
+  color: #f87171;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .s-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .drop {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}

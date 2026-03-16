@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oral Cancer Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="wrap">
+
+        <h1>🩺 Oral Cancer Detection System</h1>
+        <p class="sub">Upload an oral image and click <strong>Predict</strong> to view stage, recovery steps, and food
+            advice.</p>
+
+        {% if error %}<p class="err">⚠ {{ error }}</p>{% endif %}
+
+        <!-- Upload Form -->
+        <form id="predForm" action="/predict" method="POST" enctype="multipart/form-data">
+            <p class="lbl">📁 Upload Image (jpg/png)</p>
+            <div class="drop" id="dz" onclick="document.getElementById('fi').click()">
+                <input type="file" name="image" id="fi" accept="image/*">
+                <div class="drop-left">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5">
+                        <path d="M12 16V4m0 0L8 8m4-4l4 4" />
+                        <path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" />
+                    </svg>
+                    <div class="drop-txt">
+                        Drag and drop file here
+                        <small>Limit 200MB per file • JPG, JPEG, PNG</small>
+                    </div>
+                </div>
+                <button type="button" class="browse"
+                    onclick="event.stopPropagation();document.getElementById('fi').click()">Browse files</button>
+            </div>
+
+            <!-- Local preview (shown on file select, before submit) -->
+            <div class="prev-box" id="lprev" style="display:none">
+                <img id="pimg" src="" alt="Preview">
+                <figcaption>Uploaded Image</figcaption>
+            </div>
+
+            <button id="predBtn" type="submit" class="pred-btn">🔍 Predict</button>
+        </form>
+
+
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</body>
+
+</html>

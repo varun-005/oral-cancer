@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results — Oral Cancer Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="wrap">
+
+        <a href="/" class="back-btn">&#8592; Analyse Another Image</a>
+        <h1>&#128300; Detection Results</h1>
+
+        <figure class="prev-box">
+            <img src="{{ url_for('static', filename='uploads/' + prediction.image_filename) }}" alt="Uploaded Image">
+            <figcaption>Uploaded Image</figcaption>
+        </figure>
+
+        <div class="card c-stage">&#129514; <strong>Stage:</strong> {{ prediction.stage }}</div>
+        <div class="card c-action">&#128138; <strong>Recommended Action:</strong> {{ prediction.action }}</div>
+        <div class="card c-diet">&#129367; <strong>Dietary Advice:</strong> {{ prediction.diet }}</div>
+
+        <div class="gauge-wrap">
+            <canvas id="gc" width="420" height="220" data-risk-pct="{{ prediction.risk_pct }}"></canvas>
+        </div>
+
+        <h3 style="font-size:1rem;margin:6px 0 14px;color:#ccc">Confidence per Stage</h3>
+        <div class="s-grid">
+            <div class="s-card n-card {% if prediction.stage_idx == 0 %}active{% endif %}">
+                <div class="sn">Normal</div>
+                <div class="sv">{{ prediction.confidences[0]|int }}%</div>
+            </div>
+            <div class="s-card p1-card {% if prediction.stage_idx == 1 %}active{% endif %}">
+                <div class="sn">Pre-Cancerous Stage I</div>
+                <div class="sv">{{ prediction.confidences[1]|int }}%</div>
+            </div>
+            <div class="s-card p2-card {% if prediction.stage_idx == 2 %}active{% endif %}">
+                <div class="sn">Pre-Cancerous Stage II</div>
+                <div class="sv">{{ prediction.confidences[2]|int }}%</div>
+            </div>
+            <div class="s-card ca-card {% if prediction.stage_idx == 3 %}active{% endif %}">
+                <div class="sn">Cancerous Stage</div>
+                <div class="sv">{{ prediction.confidences[3]|int }}%</div>
+            </div>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/results.js') }}"></script>
+
+    </div>
+</body>
+
+</html>

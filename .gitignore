@@ -1,0 +1,18 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# User Uploads
+# Prevent uploaded images from being committed to the repository.
+static/uploads/
+static/*.jpeg
+model/Oral Cancer Dataset/
+
+# Environment variables
+.env
