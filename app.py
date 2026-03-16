@@ -17,6 +17,10 @@ RESNET_MODEL_PATH    = "model/resnet152v2_oral_cancer.h5"
 
 IMG_SIZE = (224, 224)
 
+def env_flag(name, default='0'):
+    value = os.getenv(name, default)
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+
 def predict_with_model(model_path, image_array):
     model = load_model(model_path, compile=False)
     try:
@@ -27,9 +31,12 @@ def predict_with_model(model_path, image_array):
         gc.collect()
 
 def predict_risk(image_array):
-    mobilenet_pred = predict_with_model(MOBILENET_MODEL_PATH, image_array)
-    resnet_pred    = predict_with_model(RESNET_MODEL_PATH, image_array)
-    return round((mobilenet_pred + resnet_pred) / 2 * 100, 1)
+    predictions = [predict_with_model(MOBILENET_MODEL_PATH, image_array)]
+
+    if env_flag('USE_RESNET', '1'):
+        predictions.append(predict_with_model(RESNET_MODEL_PATH, image_array))
+
+    return round(sum(predictions) / len(predictions) * 100, 1)
 
 def preprocess_image(image_path):
     image = load_img(image_path, target_size=IMG_SIZE)
