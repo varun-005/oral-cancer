@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, session, redirect, url_for
+import gc
 import os
 import uuid
+from tensorflow.keras import backend as keras_backend
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
@@ -13,16 +15,21 @@ app.secret_key = os.getenv('SECRET_KEY', 'oral_cancer_secret_2025')
 MOBILENET_MODEL_PATH = "model/mobilenet_oral_cancer.h5"
 RESNET_MODEL_PATH    = "model/resnet152v2_oral_cancer.h5"
 
-mobilenet_model = None
-resnet_model    = None
-
 IMG_SIZE = (224, 224)
 
-def load_models():
-    global mobilenet_model, resnet_model
-    if mobilenet_model is None:
-        mobilenet_model = load_model(MOBILENET_MODEL_PATH)
-        resnet_model    = load_model(RESNET_MODEL_PATH)
+def predict_with_model(model_path, image_array):
+    model = load_model(model_path, compile=False)
+    try:
+        return float(model.predict(image_array, verbose=0)[0][0])
+    finally:
+        del model
+        keras_backend.clear_session()
+        gc.collect()
+
+def predict_risk(image_array):
+    mobilenet_pred = predict_with_model(MOBILENET_MODEL_PATH, image_array)
+    resnet_pred    = predict_with_model(RESNET_MODEL_PATH, image_array)
+    return round((mobilenet_pred + resnet_pred) / 2 * 100, 1)
 
 def preprocess_image(image_path):
     image = load_img(image_path, target_size=IMG_SIZE)
@@ -78,11 +85,8 @@ def predict():
         upload_path     = os.path.join(upload_folder, unique_filename)
         file.save(upload_path)
 
-        image_array    = preprocess_image(upload_path)
-        load_models()
-        mobilenet_pred = float(mobilenet_model.predict(image_array, verbose=0)[0][0])
-        resnet_pred    = float(resnet_model.predict(image_array, verbose=0)[0][0])
-        risk_pct       = round((mobilenet_pred + resnet_pred) / 2 * 100, 1)
+        image_array = preprocess_image(upload_path)
+        risk_pct    = predict_risk(image_array)
 
         stage_data  = get_stage_info(risk_pct)
         confidences = [0.0, 0.0, 0.0, 0.0]

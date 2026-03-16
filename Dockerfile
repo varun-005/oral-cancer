@@ -22,4 +22,4 @@ EXPOSE 7860
 
 # Run the Gunicorn web server
 # Use Render's dynamic PORT when available, with a local/HF fallback.
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-7860} --timeout 120 app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-7860} --timeout 300 app:app"]
