@@ -1,34 +1,28 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import os
 import uuid
-from dotenv import load_dotenv
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 from PIL import UnidentifiedImageError
 from werkzeug.utils import secure_filename
 
-load_dotenv()  # Load environment variables from .env file
-
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'a-default-fallback-secret-key')
+app.secret_key = os.getenv('SECRET_KEY', 'oral_cancer_secret_2025')
 
 MOBILENET_MODEL_PATH = "model/mobilenet_oral_cancer.h5"
-RESNET_MODEL_PATH   = "model/resnet152v2_oral_cancer.h5" # Re-enabled
+RESNET_MODEL_PATH    = "model/resnet152v2_oral_cancer.h5"
 
 mobilenet_model = None
-resnet_model    = None # Re-enabled
+resnet_model    = None
 
 IMG_SIZE = (224, 224)
 
-def load_models_lazily():
-    """Load models on first request to save memory at startup."""
+def load_models():
     global mobilenet_model, resnet_model
     if mobilenet_model is None:
-        print("Lazy loading MobileNet model...")
         mobilenet_model = load_model(MOBILENET_MODEL_PATH)
-        print("Lazy loading ResNet model...") # Re-enabled
-        resnet_model    = load_model(RESNET_MODEL_PATH) # Re-enabled
+        resnet_model    = load_model(RESNET_MODEL_PATH)
 
 def preprocess_image(image_path):
     image = load_img(image_path, target_size=IMG_SIZE)
@@ -66,24 +60,6 @@ def get_stage_info(risk_pct):
             'stage_idx': 3
         }
 
-def _get_model_prediction(image_array):
-    """Runs the models and returns the averaged risk percentage."""
-    load_models_lazily()  # Ensure models are loaded
-    mobilenet_pred = float(mobilenet_model.predict(image_array)[0][0])
-    resnet_pred = float(resnet_model.predict(image_array)[0][0])
-    avg_score = (mobilenet_pred + resnet_pred) / 2
-    return round(avg_score * 100, 1)
-
-def _save_uploaded_image(file):
-    """Saves the uploaded file to a unique path and returns the filename and full path."""
-    filename = secure_filename(file.filename)
-    unique_filename = f"{uuid.uuid4()}_{filename}"
-    upload_folder = os.path.join('static', 'uploads')
-    os.makedirs(upload_folder, exist_ok=True)
-    upload_path = os.path.join(upload_folder, unique_filename)
-    file.save(upload_path)
-    return unique_filename, upload_path
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -95,29 +71,36 @@ def predict():
         return render_template('index.html', error="No file selected.")
 
     try:
-        unique_filename, upload_path = _save_uploaded_image(file)
-        image_array = preprocess_image(upload_path)
-        risk_pct = _get_model_prediction(image_array)
+        filename        = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4()}_{filename}"
+        upload_folder   = os.path.join('static', 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        upload_path     = os.path.join(upload_folder, unique_filename)
+        file.save(upload_path)
 
-        stage_data = get_stage_info(risk_pct)
+        image_array    = preprocess_image(upload_path)
+        load_models()
+        mobilenet_pred = float(mobilenet_model.predict(image_array, verbose=0)[0][0])
+        resnet_pred    = float(resnet_model.predict(image_array, verbose=0)[0][0])
+        risk_pct       = round((mobilenet_pred + resnet_pred) / 2 * 100, 1)
 
+        stage_data  = get_stage_info(risk_pct)
         confidences = [0.0, 0.0, 0.0, 0.0]
         confidences[stage_data['stage_idx']] = 100.0
 
-        session['prediction'] = { # Combine dictionaries using unpacking
+        session['prediction'] = {
             'image_filename': unique_filename,
-            'risk_pct':   risk_pct,
-            'confidences': confidences,
+            'risk_pct':       risk_pct,
+            'confidences':    confidences,
             **stage_data
         }
         return redirect(url_for('result'))
+
     except UnidentifiedImageError:
-        print("An UnidentifiedImageError occurred: The file is not a valid image.")
-        return render_template('index.html', error="Invalid file format. Please upload a valid JPG, PNG, or other image file.")
+        return render_template('index.html', error="Invalid file. Please upload a valid JPG or PNG image.")
     except Exception as e:
-        # Log the error for debugging and show a user-friendly message
-        print(f"An error occurred: {e}")
-        return render_template('index.html', error="An unexpected error occurred during prediction.")
+        print(f"Error: {e}")
+        return render_template('index.html', error="An unexpected error occurred. Please try again.")
 
 @app.route('/result')
 def result():
@@ -127,4 +110,4 @@ def result():
     return render_template('result.html', prediction=prediction)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.getenv('FLASK_DEBUG', '0') == '1')

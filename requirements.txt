@@ -1,6 +1,4 @@
-Flask
-# tensorflow-cpu # Removed as it's provided by the base Docker image
+flask
 numpy
-Pillow
+pillow
 gunicorn
-python-dotenv

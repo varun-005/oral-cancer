@@ -1,5 +1,7 @@
-# Use an official TensorFlow CPU image with Python 3.9 as the base
-FROM tensorflow/tensorflow:2.10.0-cpu-python3.9
+# Use an official TensorFlow image aligned with local development
+FROM tensorflow/tensorflow:2.20.0
+
+ENV PYTHONUNBUFFERED=1
 
 # Set the working directory inside the container
 WORKDIR /app
