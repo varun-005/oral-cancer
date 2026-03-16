@@ -9,8 +9,10 @@ WORKDIR /app
 # Copy the requirements file to the working directory
 COPY requirements.txt .
 
-# Install the Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# TensorFlow base image ships an older distutils-installed blinker.
+# Install a wheel version first without uninstalling the system package.
+RUN pip install --no-cache-dir --ignore-installed blinker==1.9.0 && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of your application's code into the container
 COPY . .
