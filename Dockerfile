@@ -21,5 +21,5 @@ COPY . .
 EXPOSE 7860
 
 # Run the Gunicorn web server
-# We use --bind 0.0.0.0 to make it accessible from outside the container
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--timeout", "120", "app:app"]
+# Use Render's dynamic PORT when available, with a local/HF fallback.
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-7860} --timeout 120 app:app"]
